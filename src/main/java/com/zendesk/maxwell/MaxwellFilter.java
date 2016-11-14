@@ -183,6 +183,13 @@ public class MaxwellFilter {
 	public boolean matches(AbstractRowsEvent e) {
 		String database = e.getTable().getDatabase();
 		String table = e.getTable().getName();
+
+		/* there's an odd RDS thing, I guess, where ha_health_check doesn't 
+		 * show up in INFORMATION_SCHEMA but it's replicated nonetheless. */
+
+		if ( database.equals("mysql") && table.equals("ha_health_check") )
+			return false;
+
 		return ( database.equals("maxwell") && table.equals("bootstrap") )
 			|| ( matchesDatabase(database) && matchesTable(table) && matchesAnyRows(e) );
 	}
